@@ -1,7 +1,7 @@
 
   
 
-# twAuto - Twitter Automation Test Tool 🦆
+# twAuto - Twitter Automation Tool 🦆
 
   
 
