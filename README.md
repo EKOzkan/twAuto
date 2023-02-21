@@ -47,7 +47,7 @@ tw = twAuto.twAuto(
   pathType="testId" or "xPath", #It is testId by default. If you had any problems with library you can try the xPath mode too.
   headless=True/False, #Headless is true by default.
   debugMode= True/False #Really poorly implemented debug mode, this is for reading occured errors.
-                        #It is not realiable right now but you can give it a try if you want to.
+                        #It is not reliable right now but you can give it a try if you want to.
 )
 
 ```
@@ -70,7 +70,7 @@ tw.login()
 
 <br/>
 
-**- Login Errors:** If you encounter any error in the login process, you can use manualCookieCreation() to get your cookie file manually.
+**- Login Errors:** If you encounter any errors in the login process, you can use manualCookieCreation() to get your cookie file manually.
 Run the function after tw.start() line. Then after the browser window opened, login to account you want to automate, then enter any character in the terminal. This will create a cookie file after this, you can use the library.
 
 Note: Headless must be False to use this function.
