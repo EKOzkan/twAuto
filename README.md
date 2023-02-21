@@ -43,6 +43,7 @@ tw = twAuto.twAuto(
   password="Your Twitter Password",
   chromeDriverMode="manual" or "auto", #if you use auto twAuto will automatically download the chrome driver for you,
                                        #if you use the manual option, you need to provide the driver path in driverPath parameter.
+  driverPath="your drivers path", #use only if you are using the chromeDriverMode in manual mode 
   pathType="testId" or "xPath", #It is testId by default. If you had any problems with library you can try the xPath mode too.
   headless=True/False, #Headless is true by default.
   debugMode= True/False #Really poorly implemented debug mode, this is for reading occured errors.
