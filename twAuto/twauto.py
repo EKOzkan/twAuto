@@ -37,7 +37,7 @@ class twAuto:
         debugMode=False,
         chromeDriverMode="auto", #manual or auto
         driverPath = "./chrome.exe", #if you use manual, pass the driverPath
-        pathType = "xPath" #xPath or testId
+        pathType = "testId" #xPath or testId
     ):
         self.email = email
         self.username = username
@@ -463,14 +463,15 @@ class twAuto:
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
-            if self.pathType == "xPath":
+            """ if self.pathType == "xPath":
                 try:
                     try:
                         body_element = container_element.find_element(
                             By.XPATH, './/div[3]/div[8]/div/div[1]/div')
-                    except:
+                    except Exception as e:
                         body_element = container_element.find_element(
                             By.XPATH, './/div[3]/div[7]/div/div[1]/div')
+                        if self.debugMode : print("twAuto Error: ", e)
                     body_element.click()
                     try:
                         wait = WebDriverWait(twAuto.driver, 5)
@@ -494,19 +495,21 @@ class twAuto:
                         replyURL = twAuto.driver.find_element(
                             By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a").get_attribute("href")
                         return replyURL
-                    except:
+                    except Exception as e:
+                        if self.debugMode : print("twAuto Error: ", e)
                         return False
-                except:
-                    return False
-            if self.pathType == "testId":
+                except Exception as e:
+                    if self.debugMode : print("twAuto Error: ", e)
+                    return False """
+            if self.pathType == "testId" or self.pathType == "xPath":
                 #data-testid="tweetTextarea_0_label"]tweetButton
                 try:
                     try:
                         body_element = container_element.find_element(
                             By.XPATH, './/div[3]/div[8]/div/div[1]/div')
-                    except:
+                    except Exception as e:
                         body_element = container_element.find_element(
-                            By.XPATH, './/div[3]/div[7]/div/div[1]/div')
+                            By.XPATH, '//div[@data-testid="tweetTextarea_0RichTextInputContainer"]')
                     body_element.click()
                     try:
                         #tweetTextarea_0
@@ -532,25 +535,38 @@ class twAuto:
                                 "arguments[0].style.display = 'block';", element)
 
                             element.send_keys(imgpath)
-
+                        time.sleep(1)
+                        #check if there is a mask
+                        try:
+                            maskClose = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="app-bar-close"]')
+                            twAuto.driver.execute_script("arguments[0].click()", maskClose)
+                        except:
+                            pass
                         #find tweet button
-                        tweetButton = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="tweetButton"]')
-                        
-                        #click tweet button
-                        twAuto.driver.execute_script("arguments[0].click()", tweetButton)
+                        try:
+                            tweetButton = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="tweetButton"]')
+                            #click tweet button
+                            twAuto.driver.execute_script("arguments[0].click()", tweetButton)
+                        except:
+                            tweetButton = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="tweetButtonInline"]')
+                            #click tweet button
+                            twAuto.driver.execute_script("arguments[0].click()", tweetButton)
+
                     
                         wait.until(EC.presence_of_element_located(
-                            (By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a")))
-                        replyURL = twAuto.driver.find_element(
-                            By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a").get_attribute("href")
-                        return replyURL
-                    except:
+                            (By.XPATH, '//div[@data-testid="toast"]')))
+                        replyURLButton = twAuto.driver.find_element(
+                            By.XPATH, '//div[@data-testid="toast"]')
+                        replyURLElement = replyURLButton.find_element(By.XPATH, './/div[2]/a[1]').get_attribute("href")
+                        return replyURLElement
+                    except Exception as e:
+                        if self.debugMode : print("twAuto Error: ", e)
                         return False
-                except:
+                except Exception as e:
+                    if self.debugMode : print("twAuto Error: ", e)
                     return False
         except Exception as e:
-            if self.debugMode:
-                print("twAuto Error: ", e)
+            if self.debugMode : print("twAuto Error: ", e)
             return False
                 
     # locates tweet in the page based on the tweets content
