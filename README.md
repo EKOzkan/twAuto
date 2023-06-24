@@ -14,7 +14,7 @@ Note: While using this library I didnt encounter any problems/bad response from 
 
 - [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
 
-- [selenium](https://pypi.org/project/selenium/)
+- [selenium 4.4.3](https://pypi.org/project/selenium/4.4.3/)
 
 - [webdriver-manager](https://pypi.org/project/webdriver-manager/)
 
