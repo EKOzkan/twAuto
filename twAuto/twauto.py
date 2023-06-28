@@ -37,7 +37,8 @@ class twAuto:
         debugMode=False,
         chromeDriverMode="auto", #manual or auto
         driverPath = "./chrome.exe", #if you use manual, pass the driverPath
-        pathType = "testId" #xPath or testId
+        pathType = "testId", #xPath or testId
+        createCookies = True
     ):
         self.email = email
         self.username = username
@@ -128,7 +129,8 @@ class twAuto:
             twAuto.driver.get("https://twitter.com/Twitter/")
 
             if not twAuto.cookies_exists:
-                pickle.dump(twAuto.driver.get_cookies(), open("cookies.pkl", "wb"))
+                if self.createCookies:
+                    pickle.dump(twAuto.driver.get_cookies(), open("cookies.pkl", "wb"))
                 
         except Exception as e:
             if self.debugMode:
