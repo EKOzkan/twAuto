@@ -48,6 +48,7 @@ class twAuto:
         self.pathType = pathType
         self.headless = headless
         self.debugMode = debugMode
+        self.createCookies = createCookies
         if headless:
             twAuto.chrome_options.add_argument('--headless')
         if debugMode:
