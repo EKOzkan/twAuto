@@ -1,4 +1,4 @@
-# twAuto - Twitter Automation Tool v0.3.8 🦆 ![PyPI](https://img.shields.io/pypi/v/twauto) [![Downloads](https://static.pepy.tech/badge/twauto)](https://pepy.tech/project/twauto)
+# twAuto - Twitter Automation Tool v0.3.9 🦆 ![PyPI](https://img.shields.io/pypi/v/twauto) [![Downloads](https://static.pepy.tech/badge/twauto)](https://pepy.tech/project/twauto)
 
 
 twAuto is a library for "Tweeting", "Retweeting", "Replying", "Tweet Quoting", "Tweet Liking" without any API requirements using Selenium.
