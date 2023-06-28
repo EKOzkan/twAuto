@@ -1,4 +1,4 @@
-# twAuto - Twitter Automation Tool v0.3.7 🦆 ![PyPI](https://img.shields.io/pypi/v/twauto) [![Downloads](https://static.pepy.tech/badge/twauto)](https://pepy.tech/project/twauto)
+# twAuto - Twitter Automation Tool v0.3.8 🦆 ![PyPI](https://img.shields.io/pypi/v/twauto) [![Downloads](https://static.pepy.tech/badge/twauto)](https://pepy.tech/project/twauto)
 
 
 twAuto is a library for "Tweeting", "Retweeting", "Replying", "Tweet Quoting", "Tweet Liking" without any API requirements using Selenium.
@@ -50,6 +50,7 @@ tw = twAuto.twAuto(
   headless=True/False, #Headless is true by default.
   debugMode= True/False #Really poorly implemented debug mode, this is for reading occured errors.
                         #It is not reliable right now but you can give it a try if you want to.
+  createCookies= True/False #True by default.
 )
 
 ```
