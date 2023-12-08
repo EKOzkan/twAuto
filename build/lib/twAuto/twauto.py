@@ -16,7 +16,9 @@ from urllib import request
 
 from selenium.webdriver.chrome.service import Service as ChromiumService
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import ChromeType
+from webdriver_manager.core.os_manager import ChromeType
+import chromedriver_autoinstaller
+
 
 class twAuto:
     driver = None
@@ -37,7 +39,8 @@ class twAuto:
         debugMode=False,
         chromeDriverMode="auto", #manual or auto
         driverPath = "./chrome.exe", #if you use manual, pass the driverPath
-        pathType = "xPath" #xPath or testId
+        pathType = "testId", #xPath or testId
+        createCookies = True
     ):
         self.email = email
         self.username = username
@@ -47,6 +50,7 @@ class twAuto:
         self.pathType = pathType
         self.headless = headless
         self.debugMode = debugMode
+        self.createCookies = createCookies
         if headless:
             twAuto.chrome_options.add_argument('--headless')
         if debugMode:
@@ -54,31 +58,37 @@ class twAuto:
 
     # start selenium driver
     def start(self):
+        print("Starting twAuto...")
         try:
             if self.chromeDriverMode == "auto":
+                print("Downloading Chrome Driver...")
+                #chromedriver_autoinstaller.install() 
+
                 twAuto.driver = webdriver.Chrome(ChromeDriverManager().install(), options=twAuto.chrome_options)
+                print("Chrome Driver Downloaded Successfully")
             else:
+                print("Using Chrome Driver from the path: "+self.driverPath)
                 twAuto.driver = webdriver.Chrome(self.driverPath, options=twAuto.chrome_options)
         except Exception as e:
             if self.debugMode:
                 print("twAuto Error: ", e)
     # test function to open twitter on chrome
     def openTw(self):
-        twAuto.driver.get("https://twitter.com/home")
+        twAuto.driver.get("https://x.com/home")
 
     # login to twitter
     def login(self):
         try:
-            twAuto.driver.get("https://twitter.com/")
+            twAuto.driver.get("https://x.com/")
             # this cookie importing prevents 'New login notification" in every action
             if twAuto.cookies_exists:
                 cookies = pickle.load(open("cookies.pkl", "rb"))
                 for cookie in cookies:
                     twAuto.driver.add_cookie(cookie)
             if twAuto.cookies_exists:
-                twAuto.driver.get("https://twitter.com/")
+                twAuto.driver.get("https://x.com/")
             else:
-                twAuto.driver.get("https://twitter.com/login")
+                twAuto.driver.get("https://x.com/login")
                 try:
                     wait = WebDriverWait(twAuto.driver, 120)
                     wait.until(EC.presence_of_element_located(
@@ -89,9 +99,9 @@ class twAuto:
                     'xpath', "//*[@id='layers']/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[5]/label/div/div[2]/div/input")
                 mailInput.send_keys(self.email)
                 twAuto.driver.find_element(
-                    'xpath', "//div[@class='css-18t94o4 css-1dbjc4n r-sdzlij r-1phboty r-rs99b7 r-ywje51 r-usiww2 r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr r-13qz1uu']").click()
+                    'xpath', "//*[@id='layers']/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[6]/div").click()
                 time.sleep(3)
-
+#'xpath', "//input[@autocomplete=username']").click()
                 try:
                     userNameInput = twAuto.driver.find_element(
                         'xpath', "/html/body/div/div/div/div[1]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[1]/div/div/div[3]/div/label/div/div[2]/div[1]/input")
@@ -125,10 +135,11 @@ class twAuto:
                 if self.debugMode:
                     print("twAuto Error: ", e)
 
-            twAuto.driver.get("https://twitter.com/Twitter/")
+            twAuto.driver.get("https://x.com/Twitter/")
 
             if not twAuto.cookies_exists:
-                pickle.dump(twAuto.driver.get_cookies(), open("cookies.pkl", "wb"))
+                if self.createCookies:
+                    pickle.dump(twAuto.driver.get_cookies(), open("cookies.pkl", "wb"))
                 
         except Exception as e:
             if self.debugMode:
@@ -142,7 +153,7 @@ class twAuto:
     #and after that you can use the login function and module without any problem
     def manualCookieCreation(self):
         if not self.headless:
-            twAuto.driver.get("https://twitter.com/login")
+            twAuto.driver.get("https://x.com/login")
             input("Please login to your account. After you login, press any key to save your cookies to current folder.")
             pickle.dump(twAuto.driver.get_cookies(), open("cookies.pkl", "wb"))
         else:
@@ -153,27 +164,11 @@ class twAuto:
     # tweet text
     def tweet(self, imgpath=None, text=""):
         # load tweeting page
-        twAuto.driver.get("https://twitter.com/home")
-        twAuto.driver.get('https://twitter.com/compose/tweet')
-
-
+        twAuto.driver.get("https://x.com/home")
+        urlWithText = "https://x.com/compose/tweet?text="+text
+        twAuto.driver.get(urlWithText)
         if self.pathType=="xPath":
             try:
-                # try finding tweet inbox
-                try:
-                    wait = WebDriverWait(twAuto.driver, 120)
-                    wait.until(EC.presence_of_element_located(
-                        (By.XPATH, "//*[@id='layers']/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div/div/div/div/label/div[1]/div/div/div/div/div/div[2]/div")))
-                except TimeoutException:
-                    print('Couldnt tweet.')
-
-                # modify tweet text
-                full_text = text
-
-                input_field = twAuto.driver.find_element(
-                    'xpath', "//*[@id='layers']/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div/div/div/div/label/div[1]/div/div/div/div/div/div[2]/div")
-                input_field.send_keys(full_text)
-
                 try:
                     wait = WebDriverWait(twAuto.driver, 120)
                     wait.until(EC.presence_of_element_located(
@@ -228,21 +223,6 @@ class twAuto:
 
         if self.pathType == "testId":
             try:
-                # try finding tweet inbox
-                try:
-                    wait = WebDriverWait(twAuto.driver, 120)
-                    wait.until(EC.presence_of_element_located(
-                        (By.XPATH, '//div[@data-testid="tweetTextarea_0"]')))
-                except TimeoutException:
-                    print('Couldnt tweet.')
-                
-                # modify tweet text
-                full_text = text
-                
-                input_field = twAuto.driver.find_element(
-                    'xpath', '//div[@data-testid="tweetTextarea_0"]')
-                input_field.send_keys(full_text)
-                
                 try:
                     wait = WebDriverWait(twAuto.driver, 120)
                     wait.until(EC.presence_of_element_located((By.XPATH, '//div[@data-testid="tweetButton"]')))
@@ -302,8 +282,9 @@ class twAuto:
         
     # quote tweet. this function uses the "adding the quoted tweets url to end of the text method" but maybe i will add the another version of this function that uses the quote tweet function later
     def quoteTweet(self, url="", imgpath="", text=""):
+        
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
@@ -385,7 +366,7 @@ class twAuto:
     # retweet and like functions are not working with tweets or replies with no text. I will fix it in the future.
     def retweet(self, url=""):
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
@@ -430,7 +411,7 @@ class twAuto:
     # likes tweet
     def like(self, url=""):
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
@@ -459,71 +440,14 @@ class twAuto:
     # reply to a tweet
     def reply(self, url="", imgpath="", text=""):
         try:
-            twAuto.driver.get("https://twitter.com/home")
-            fixUrl=url+"?s=20"
-            twAuto.driver.get(fixUrl)
-            container_element = self.findTweet(url=url)
-            if self.pathType == "xPath":
-                try:
-                    try:
-                        body_element = container_element.find_element(
-                            By.XPATH, './/div[3]/div[8]/div/div[1]/div')
-                    except:
-                        body_element = container_element.find_element(
-                            By.XPATH, './/div[3]/div[7]/div/div[1]/div')
-                    body_element.click()
-                    try:
-                        wait = WebDriverWait(twAuto.driver, 5)
-                        wait.until(EC.presence_of_element_located(
-                            (By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div/div[2]/div/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/label/div[1]/div/div/div/div/div/div[2]/div")))
-                        twAuto.driver.find_element(
-                            By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div/div[2]/div/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/label/div[1]/div/div/div/div/div/div[2]/div").send_keys(text+" ")
-                        if imgpath != "":
-                            element = twAuto.driver.find_element(
-                                By.XPATH, "//input[@type='file']")
-
-                            twAuto.driver.execute_script(
-                                "arguments[0].style.display = 'block';", element)
-
-                            element.send_keys(imgpath)
-                        tweetReplyButton = twAuto.driver.find_element(
-                            By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[3]/div/div[2]/div/div/div/div/div[2]/div[3]/div/div/div[2]/div[2]")
-                        tweetReplyButton.click()
-                        wait.until(EC.presence_of_element_located(
-                            (By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a")))
-                        replyURL = twAuto.driver.find_element(
-                            By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a").get_attribute("href")
-                        return replyURL
-                    except:
-                        return False
-                except:
-                    return False
-            if self.pathType == "testId":
+            twAuto.driver.get("https://x.com/home")
+            tweet_id = self.extract_tweet_id(url)
+            urlWithText = "https://x.com/intent/tweet?in_reply_to="+tweet_id+"&text="+text
+            twAuto.driver.get(urlWithText)
+            if self.pathType == "testId" or self.pathType == "xPath":
                 #data-testid="tweetTextarea_0_label"]tweetButton
                 try:
                     try:
-                        body_element = container_element.find_element(
-                            By.XPATH, './/div[3]/div[8]/div/div[1]/div')
-                    except:
-                        body_element = container_element.find_element(
-                            By.XPATH, './/div[3]/div[7]/div/div[1]/div')
-                    body_element.click()
-                    try:
-                        #tweetTextarea_0
-                        wait = WebDriverWait(twAuto.driver, 5)
-                        wait.until(EC.presence_of_element_located(
-                            (By.XPATH, '//div[@data-testid="tweetTextarea_0"]')))
-                        
-                        input_field = twAuto.driver.find_element(
-                            'xpath', '//div[@data-testid="tweetTextarea_0"]')
-                        if text=="":
-                            input_field.send_keys(text)
-                        else:
-                            input_field.send_keys(text)
-                            
-                        #imgbutton = container_element.find_element(
-                        #    By.XPATH, './/div/div/div[2]/div/div[2]/div[2]/div/div/div/div[2]/div[3]/div/div/div[1]/div[1]')
-                        
                         if imgpath != "":
                             element = twAuto.driver.find_element(
                                 By.XPATH, "//input[@type='file']")
@@ -532,25 +456,45 @@ class twAuto:
                                 "arguments[0].style.display = 'block';", element)
 
                             element.send_keys(imgpath)
-
-                        #find tweet button
-                        tweetButton = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="tweetButton"]')
                         
-                        #click tweet button
-                        twAuto.driver.execute_script("arguments[0].click()", tweetButton)
-                    
+                        #check if there is a mask
+                        try:
+                            maskClose = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="app-bar-close"]')
+                            twAuto.driver.execute_script("arguments[0].click()", maskClose)
+                        except:
+                            pass
+                        #find tweet button
+                        time.sleep(1)
+                        wait = WebDriverWait(twAuto.driver, 120)
+                      
+                        try:
+                            wait.until(EC.presence_of_element_located(
+                                (By.XPATH, '//div[@data-testid="tweetButton"]')))
+                            tweetButton = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="tweetButton"]')
+                            #click tweet button
+                            twAuto.driver.execute_script("arguments[0].click()", tweetButton)
+                        except Exception as e:
+                            wait.until(EC.presence_of_element_located(
+                                (By.XPATH, '//div[@data-testid="tweetButton"]')))
+                            
+                            tweetButton = twAuto.driver.find_element(By.XPATH, '//div[@data-testid="tweetButton"]')
+                            #click tweet button
+                            twAuto.driver.execute_script("arguments[0].click()", tweetButton)
+                        wait = WebDriverWait(twAuto.driver, 120)
                         wait.until(EC.presence_of_element_located(
-                            (By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a")))
-                        replyURL = twAuto.driver.find_element(
-                            By.XPATH, "/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div[2]/a").get_attribute("href")
-                        return replyURL
-                    except:
+                            (By.XPATH, '//div[@data-testid="toast"]')))
+                        replyURLButton = twAuto.driver.find_element(
+                            By.XPATH, '//div[@data-testid="toast"]')
+                        replyURLElement = replyURLButton.find_element(By.XPATH, './/div[2]/a[1]').get_attribute("href")
+                        return replyURLElement
+                    except Exception as e:
+                        if self.debugMode : print("twAuto Error: ", e)
                         return False
-                except:
+                except Exception as e:
+                    if self.debugMode : print("twAuto Error: ", e)
                     return False
         except Exception as e:
-            if self.debugMode:
-                print("twAuto Error: ", e)
+            if self.debugMode : print("twAuto Error: ", e)
             return False
                 
     # locates tweet in the page based on the tweets content
@@ -572,10 +516,25 @@ class twAuto:
             if self.debugMode:
                 print("twAuto Error: ", e)
             return False
-
+    def scrapeNotifications(self):
+        print("Scraping notifications...")
+        twAuto.driver.get("https://x.com/notifications")
+        try:
+            wait = WebDriverWait(twAuto.driver, 120)
+            wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div")))
+        except TimeoutException:
+            print('Couldnt find notifications container')
+        notifications = twAuto.driver.find_elements(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div')
+        notificationList = []
+        for notification in notifications:
+            notificationList.append(notification.text)
+        print("Notifications scraped successfully")
+        print("Notification list:")
+        return notificationList
     # undo retweet action - !!!Unstable!!!
     def unretweet(self, url=""):
-        twAuto.driver.get("https://twitter.com/home")
+        twAuto.driver.get("https://x.com/home")
         fixUrl=url+"?s=20"
         twAuto.driver.get(fixUrl)
         container_element = self.findTweet(url=url)
@@ -604,7 +563,7 @@ class twAuto:
     
     # logs out from twitter and deletes the cookies
     def logout(self):
-        twAuto.driver.get("https://twitter.com/logout")
+        twAuto.driver.get("https://x.com/logout")
         try:
             wait = WebDriverWait(twAuto.driver, 120)
             wait.until(EC.presence_of_element_located(
@@ -619,3 +578,11 @@ class twAuto:
     # closes selenium driver
     def close(self):
         twAuto.driver.quit()
+    def extract_tweet_id(self, url):
+        url = url.replace("https://", "")  # Remove "https://"
+        url = url.replace("http://", "")  # Remove "http://"
+        print("url:", url)
+        url_parts = url.split("/")
+        if "x.com" in url_parts:
+            url_parts.remove("x.com")
+        return url_parts[2] if len(url_parts) >= 3 else None
