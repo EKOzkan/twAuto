@@ -1,0 +1,11 @@
+LICENCE.MD
+MANIFEST.in
+README.md
+setup.py
+twAuto/__init__.py
+twAuto/twauto.py
+twAuto.egg-info/PKG-INFO
+twAuto.egg-info/SOURCES.txt
+twAuto.egg-info/dependency_links.txt
+twAuto.egg-info/requires.txt
+twAuto.egg-info/top_level.txt

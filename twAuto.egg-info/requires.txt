@@ -1,0 +1,3 @@
+selenium
+bs4
+webdriver-manager
