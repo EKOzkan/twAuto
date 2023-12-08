@@ -170,6 +170,14 @@ tw.unretweet(url="")
 
 <br/>
 
+**- Notifications:** Scrapes the latest notifications.\
+->Returns: An array that contains notification text.
+
+```python
+tw.scrapeNotifications()
+```
+
+<br/>
 **- Logout:** Logs out from current Twitter account and deletes the cookies file.
 
 ```python
