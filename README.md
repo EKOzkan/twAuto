@@ -1,12 +1,10 @@
-# twAuto - Twitter Automation Tool v0.3.9 🦆 ![PyPI](https://img.shields.io/pypi/v/twauto) [![Downloads](https://static.pepy.tech/badge/twauto)](https://pepy.tech/project/twauto)
-
+# twAuto - Twitter Automation Tool v0.4.0 🦆 ![PyPI](https://img.shields.io/pypi/v/twauto) [![Downloads](https://static.pepy.tech/badge/twauto)](https://pepy.tech/project/twauto)
 
 twAuto is a library for "Tweeting", "Retweeting", "Replying", "Tweet Quoting", "Tweet Liking" without any API requirements using Selenium.
 
 <br/>
 
 Note: While using this library I didnt encounter any problems/bad response from Twitter like banning account etc. but please use at your own risk.
-
 
 ## Requirements
 
@@ -45,7 +43,7 @@ tw = twAuto.twAuto(
   password="Your Twitter Password",
   chromeDriverMode="manual" or "auto", #if you use auto twAuto will automatically download the chrome driver for you,
                                        #if you use the manual option, you need to provide the driver path in driverPath parameter.
-  driverPath="your drivers path", #use only if you are using the chromeDriverMode in manual mode 
+  driverPath="your drivers path", #use only if you are using the chromeDriverMode in manual mode
   pathType="testId" or "xPath", #It is testId by default. I highly recommend you to use testId instead of xPath. If you had any problems with library you can try the xPath mode too.
   headless=True/False, #Headless is true by default.
   debugMode= True/False #Really poorly implemented debug mode, this is for reading occured errors.

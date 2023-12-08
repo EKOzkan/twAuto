@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='twAuto',
-    version='0.3.9',
+    version='0.4.0',
     packages=find_packages(exclude=['tests*']),
     license='MIT',
     description='TwAuto is a library for testing your code on pre-Twitter API application stage.',

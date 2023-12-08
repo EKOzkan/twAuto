@@ -16,7 +16,9 @@ from urllib import request
 
 from selenium.webdriver.chrome.service import Service as ChromiumService
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import ChromeType
+from webdriver_manager.core.os_manager import ChromeType
+import chromedriver_autoinstaller
+
 
 class twAuto:
     driver = None
@@ -56,31 +58,37 @@ class twAuto:
 
     # start selenium driver
     def start(self):
+        print("Starting twAuto...")
         try:
             if self.chromeDriverMode == "auto":
+                print("Downloading Chrome Driver...")
+                #chromedriver_autoinstaller.install() 
+
                 twAuto.driver = webdriver.Chrome(ChromeDriverManager().install(), options=twAuto.chrome_options)
+                print("Chrome Driver Downloaded Successfully")
             else:
+                print("Using Chrome Driver from the path: "+self.driverPath)
                 twAuto.driver = webdriver.Chrome(self.driverPath, options=twAuto.chrome_options)
         except Exception as e:
             if self.debugMode:
                 print("twAuto Error: ", e)
     # test function to open twitter on chrome
     def openTw(self):
-        twAuto.driver.get("https://twitter.com/home")
+        twAuto.driver.get("https://x.com/home")
 
     # login to twitter
     def login(self):
         try:
-            twAuto.driver.get("https://twitter.com/")
+            twAuto.driver.get("https://x.com/")
             # this cookie importing prevents 'New login notification" in every action
             if twAuto.cookies_exists:
                 cookies = pickle.load(open("cookies.pkl", "rb"))
                 for cookie in cookies:
                     twAuto.driver.add_cookie(cookie)
             if twAuto.cookies_exists:
-                twAuto.driver.get("https://twitter.com/")
+                twAuto.driver.get("https://x.com/")
             else:
-                twAuto.driver.get("https://twitter.com/login")
+                twAuto.driver.get("https://x.com/login")
                 try:
                     wait = WebDriverWait(twAuto.driver, 120)
                     wait.until(EC.presence_of_element_located(
@@ -91,9 +99,9 @@ class twAuto:
                     'xpath', "//*[@id='layers']/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[5]/label/div/div[2]/div/input")
                 mailInput.send_keys(self.email)
                 twAuto.driver.find_element(
-                    'xpath', "//div[@class='css-18t94o4 css-1dbjc4n r-sdzlij r-1phboty r-rs99b7 r-ywje51 r-usiww2 r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr r-13qz1uu']").click()
+                    'xpath', "//*[@id='layers']/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[6]/div").click()
                 time.sleep(3)
-
+#'xpath', "//input[@autocomplete=username']").click()
                 try:
                     userNameInput = twAuto.driver.find_element(
                         'xpath', "/html/body/div/div/div/div[1]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[1]/div/div/div[3]/div/label/div/div[2]/div[1]/input")
@@ -127,7 +135,7 @@ class twAuto:
                 if self.debugMode:
                     print("twAuto Error: ", e)
 
-            twAuto.driver.get("https://twitter.com/Twitter/")
+            twAuto.driver.get("https://x.com/Twitter/")
 
             if not twAuto.cookies_exists:
                 if self.createCookies:
@@ -145,7 +153,7 @@ class twAuto:
     #and after that you can use the login function and module without any problem
     def manualCookieCreation(self):
         if not self.headless:
-            twAuto.driver.get("https://twitter.com/login")
+            twAuto.driver.get("https://x.com/login")
             input("Please login to your account. After you login, press any key to save your cookies to current folder.")
             pickle.dump(twAuto.driver.get_cookies(), open("cookies.pkl", "wb"))
         else:
@@ -156,8 +164,8 @@ class twAuto:
     # tweet text
     def tweet(self, imgpath=None, text=""):
         # load tweeting page
-        twAuto.driver.get("https://twitter.com/home")
-        urlWithText = "https://twitter.com/compose/tweet?text="+text
+        twAuto.driver.get("https://x.com/home")
+        urlWithText = "https://x.com/compose/tweet?text="+text
         twAuto.driver.get(urlWithText)
         if self.pathType=="xPath":
             try:
@@ -276,7 +284,7 @@ class twAuto:
     def quoteTweet(self, url="", imgpath="", text=""):
         
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
@@ -358,7 +366,7 @@ class twAuto:
     # retweet and like functions are not working with tweets or replies with no text. I will fix it in the future.
     def retweet(self, url=""):
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
@@ -403,7 +411,7 @@ class twAuto:
     # likes tweet
     def like(self, url=""):
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             fixUrl=url+"?s=20"
             twAuto.driver.get(fixUrl)
             container_element = self.findTweet(url=url)
@@ -432,9 +440,9 @@ class twAuto:
     # reply to a tweet
     def reply(self, url="", imgpath="", text=""):
         try:
-            twAuto.driver.get("https://twitter.com/home")
+            twAuto.driver.get("https://x.com/home")
             tweet_id = self.extract_tweet_id(url)
-            urlWithText = "https://twitter.com/intent/tweet?in_reply_to="+tweet_id+"&text="+text
+            urlWithText = "https://x.com/intent/tweet?in_reply_to="+tweet_id+"&text="+text
             twAuto.driver.get(urlWithText)
             if self.pathType == "testId" or self.pathType == "xPath":
                 #data-testid="tweetTextarea_0_label"]tweetButton
@@ -508,10 +516,25 @@ class twAuto:
             if self.debugMode:
                 print("twAuto Error: ", e)
             return False
-
+    def scrapeNotifications(self):
+        print("Scraping notifications...")
+        twAuto.driver.get("https://x.com/notifications")
+        try:
+            wait = WebDriverWait(twAuto.driver, 120)
+            wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div")))
+        except TimeoutException:
+            print('Couldnt find notifications container')
+        notifications = twAuto.driver.find_elements(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/section/div/div/div')
+        notificationList = []
+        for notification in notifications:
+            notificationList.append(notification.text)
+        print("Notifications scraped successfully")
+        print("Notification list:")
+        return notificationList
     # undo retweet action - !!!Unstable!!!
     def unretweet(self, url=""):
-        twAuto.driver.get("https://twitter.com/home")
+        twAuto.driver.get("https://x.com/home")
         fixUrl=url+"?s=20"
         twAuto.driver.get(fixUrl)
         container_element = self.findTweet(url=url)
@@ -540,7 +563,7 @@ class twAuto:
     
     # logs out from twitter and deletes the cookies
     def logout(self):
-        twAuto.driver.get("https://twitter.com/logout")
+        twAuto.driver.get("https://x.com/logout")
         try:
             wait = WebDriverWait(twAuto.driver, 120)
             wait.until(EC.presence_of_element_located(
@@ -560,6 +583,6 @@ class twAuto:
         url = url.replace("http://", "")  # Remove "http://"
         print("url:", url)
         url_parts = url.split("/")
-        if "twitter.com" in url_parts:
-            url_parts.remove("twitter.com")
+        if "x.com" in url_parts:
+            url_parts.remove("x.com")
         return url_parts[2] if len(url_parts) >= 3 else None
