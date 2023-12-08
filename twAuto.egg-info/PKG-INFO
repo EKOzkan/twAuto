@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: twAuto
-Version: 0.3.4
+Version: 0.4.0
 Summary: TwAuto is a library for testing your code on pre-Twitter API application stage.
 Home-page: https://github.com/EKOzkan/twAuto
 Author: Ekin Kagan Ozkan
@@ -9,7 +9,7 @@ License: MIT
 Description-Content-Type: text/markdown
 License-File: LICENCE.MD
 
-# twAuto - Twitter Automation Tool v0.3.4 🦆
+# twAuto - Twitter Automation Tool v0.4.0 🦆
 
 twAuto is a library for "Tweeting", "Retweeting", "Replying", "Tweet Quoting", "Tweet Liking" without any API requirements using Selenium.
 
